@@ -5,7 +5,7 @@
     --stone-color: #a9a9a9;
     --player-highlight: #4682b4;
     --cpu-highlight: #b22222;
-    --text-color: #333;
+    --text-color: #000000;
     --background-color: #666666; /* Gray background */
 }
 
@@ -356,7 +356,8 @@ h1 {
 }
 
 .modal-content {
-    background-color: var(--background-color);
+    background-color: #ffffff;
+    color: #333333;
     margin: 10% auto;
     padding: 20px;
     border-radius: 10px;
