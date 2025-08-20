@@ -62,10 +62,11 @@ class MancalaGame {
         this.debugConsole = document.querySelector('.debug-console');
         this.debugVisible = true;
         
-        // Make sure debug console is visible by default
-        this.debugLog.style.display = 'block';
+        // Make sure debug console is collapsed by default
+        this.debugLog.style.display = 'none';
         this.debugConsole.style.display = 'block';
-        this.toggleDebugButton.textContent = 'Hide';
+        this.toggleDebugButton.textContent = 'Show';
+        this.debugVisible = false;
         
         // Updated colorful stone colors to exactly match the image
         this.stoneColors = [
