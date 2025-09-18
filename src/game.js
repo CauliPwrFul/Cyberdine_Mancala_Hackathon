@@ -808,10 +808,12 @@ class MancalaGame {
         // Determine winner
         const playerScore = this.board[6];
         const cpuScore = this.board[13];
+        console.log('[Confetti Debug] Scores -> player:', playerScore, 'cpu:', cpuScore);
         
         if (playerScore > cpuScore) {
             this.setStatusMessage(`Game over! You win! 🎉 (${playerScore}-${cpuScore})`);
             this.logDebug(`Player wins ${playerScore}-${cpuScore}`);
+            this.triggerPlayerWinConfetti();
         } else if (playerScore < cpuScore) {
             this.setStatusMessage(`Game over! CPU wins! 😔 (${cpuScore}-${playerScore})`);
             this.logDebug(`CPU wins ${cpuScore}-${playerScore}`);
@@ -819,6 +821,78 @@ class MancalaGame {
             this.setStatusMessage(`Game over! It's a tie! 🤝 (${playerScore}-${cpuScore})`);
             this.logDebug(`Tie game ${playerScore}-${cpuScore}`);
         }
+    }
+
+    // Show a temporary confetti overlay over the game board when the player wins
+    triggerPlayerWinConfetti() {
+        console.log('[Confetti Debug] triggerPlayerWinConfetti called');
+        const gameBoard = document.querySelector('.game-board');
+        console.log('[Confetti Debug] gameBoard element:', gameBoard);
+        if (!gameBoard) return;
+
+        this.injectConfettiStylesIfNeeded();
+
+        const rect = gameBoard.getBoundingClientRect();
+        const overlay = document.createElement('div');
+        overlay.className = 'confetti-overlay';
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100vw';
+        overlay.style.height = '100vh';
+        overlay.style.pointerEvents = 'none';
+        overlay.style.overflow = 'visible';
+        overlay.style.zIndex = '9999';
+
+        document.body.appendChild(overlay);
+        console.log('[Confetti Debug] Confetti overlay appended to body. rect:', { x: rect.x, y: rect.y, width: rect.width, height: rect.height }, 'zIndex:', window.getComputedStyle(overlay).zIndex);
+
+        const colors = ['#ffeb3b', '#4fc3f7', '#ff8a65', '#ab47bc', '#66bb6a', '#ffffff', '#ffd54f', '#00ced1'];
+        const numPieces = 120;
+        for (let i = 0; i < numPieces; i++) {
+            const piece = document.createElement('div');
+            const size = 6 + Math.random() * 6;
+            piece.style.position = 'absolute';
+            piece.style.top = '-12px';
+            piece.style.left = `${Math.random() * 100}vw`;
+            piece.style.width = `${size}px`;
+            piece.style.height = `${size * 0.4}px`;
+            piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            piece.style.opacity = '0.9';
+            piece.style.borderRadius = '1px';
+            piece.style.transform = `translateY(-12px) rotate(${Math.random() * 180}deg)`;
+            piece.style.boxShadow = '0 0 2px rgba(0, 0, 0, 0.2)';
+            const duration = 1500 + Math.random() * 1500;
+            const delay = Math.random() * 300;
+            piece.style.animation = `confetti-fall-spin ${duration}ms linear ${delay}ms forwards`;
+            overlay.appendChild(piece);
+        }
+
+        console.log('[Confetti Debug] Confetti overlay now has children:', overlay.childElementCount);
+        const firstPiece = overlay.firstElementChild;
+        if (firstPiece) {
+            const pcs = window.getComputedStyle(firstPiece);
+            console.log('[Confetti Debug] First piece styles:', { width: pcs.width, height: pcs.height, top: pcs.top, left: pcs.left, animation: pcs.animationName || firstPiece.style.animation });
+        }
+
+        // Remove overlay after animations complete
+        setTimeout(() => {
+            overlay.remove();
+        }, 10000);
+    }
+
+    // Inject keyframes for confetti if not already present
+    injectConfettiStylesIfNeeded() {
+        if (document.getElementById('confetti-styles')) return;
+        const style = document.createElement('style');
+        style.id = 'confetti-styles';
+        style.textContent = `
+        @keyframes confetti-fall-spin {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 1; }
+        }
+        `;
+        document.head.appendChild(style);
     }
     
     render() {
